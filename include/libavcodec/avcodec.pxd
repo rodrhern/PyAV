@@ -178,12 +178,25 @@ cdef extern from "libavcodec/avcodec.pyav.h" nogil:
         # User Data
         void *opaque
 
+        # HW Accel
+        AVBufferRef *hw_frames_ctx
+        int sub_text_format
+        int trailing_padding
+        int64_t max_pixels
+        AVBufferRef *hw_device_ctx
+        int hwaccel_flags
+        int apply_cropping
+        int extra_hw_frames
+        AVPixelFormat (*get_format)(AVCodecContext *s, AVPixelFormat * fmt)
+
+
+
     cdef AVCodecContext* avcodec_alloc_context3(AVCodec *codec)
     cdef void avcodec_free_context(AVCodecContext **ctx)
 
     cdef int avcodec_get_context_defaults3(AVCodecContext *ctx, AVCodec *codec)
     cdef AVClass* avcodec_get_class()
-    cdef int avcodec_copy_context(AVCodecContext *dst, const AVCodecContext *src)
+    cdef int avcodec_copy_context(AVCodecContext *dst, AVCodecContext *src)
 
     cdef struct AVCodecDescriptor:
         AVCodecID id
@@ -428,3 +441,57 @@ cdef extern from "libavcodec/avcodec.pyav.h" nogil:
         int keyframe
     )
     cdef void av_parser_close(AVCodecParserContext *s)
+
+    cdef struct AVCodecHWConfig:
+        AVPixelFormat pix_fmt
+        int methods
+        AVHWDeviceType device_type
+    
+    AVCodecHWConfig *avcodec_get_hw_config(AVCodec *codec, int index)
+
+    cdef enum:
+        AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX = 0x01
+        AV_CODEC_HW_CONFIG_METHOD_HW_FRAMES_CTX = 0x02
+        AV_CODEC_HW_CONFIG_METHOD_INTERNAL      = 0x04
+        AV_CODEC_HW_CONFIG_METHOD_AD_HOC        = 0x08
+    
+    cdef enum AVFieldOrder:
+        AV_FIELD_UNKNOWN
+        AV_FIELD_PROGRESSIVE
+        AV_FIELD_TT
+        AV_FIELD_BB
+        AV_FIELD_TB
+        AV_FIELD_BT
+
+    cdef struct AVCodecParameters:
+        AVMediaType codec_type
+        AVCodecID   codec_id
+        uint32_t         codec_tag
+        uint8_t *extradata
+        int      extradata_size
+        int format
+        int64_t bit_rate
+        int bits_per_coded_sample
+        int bits_per_raw_sample
+        int profile
+        int level
+        int width
+        int height
+        AVRational sample_aspect_ratio
+        AVFieldOrder                  field_order
+        AVColorRange                  color_range
+        AVColorPrimaries              color_primaries
+        AVColorTransferCharacteristic color_trc
+        AVColorSpace                  color_space
+        AVChromaLocation              chroma_location
+        int video_delay
+        uint64_t channel_layout
+        int      channels
+        int      sample_rate
+        int      block_align
+        int      frame_size
+        int initial_padding
+        int trailing_padding
+        int seek_preroll
+
+    cdef int avcodec_parameters_to_context(AVCodecContext *codec, AVCodecParameters *par)

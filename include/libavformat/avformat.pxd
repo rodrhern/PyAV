@@ -42,8 +42,11 @@ cdef extern from "libavformat/avformat.pyav.h" nogil:
 
         int index
         int id
-
+        
         AVCodecContext *codec
+        AVCodecParameters *codecpar
+        
+        void *priv_data
 
         AVFrac pts
         AVRational time_base
@@ -57,6 +60,7 @@ cdef extern from "libavformat/avformat.pyav.h" nogil:
 
         AVRational avg_frame_rate
         AVRational sample_aspect_ratio
+        
 
     # http://ffmpeg.org/doxygen/trunk/structAVIOContext.html
     cdef struct AVIOContext:
@@ -278,5 +282,14 @@ cdef extern from "libavformat/avformat.pyav.h" nogil:
         int64_t min_ts,
         int64_t ts,
         int64_t max_ts,
+        int flags
+    )
+
+    cdef int av_find_best_stream(
+        AVFormatContext *ic, 
+        AVMediaType type,
+        int wanted_stream_nb, 
+        int related_stream,
+        AVCodec **decoder_ret, 
         int flags
     )

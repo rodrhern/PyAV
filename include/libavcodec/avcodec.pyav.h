@@ -106,3 +106,6 @@
 #ifndef CODEC_CAP_LOSSLESS
     #define CODEC_CAP_LOSSLESS 0
 #endif
+#ifndef CODEC_FLAG_GLOBAL_HEADER
+    #define CODEC_FLAG_GLOBAL_HEADER  0x00400000 ///< Place global headers in extradata instead of every keyframe.
+#endif
